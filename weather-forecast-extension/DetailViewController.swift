@@ -28,6 +28,9 @@ class DetailViewController: UIViewController {
     
     private var myData: [Data]?
     private var index: Int = 0
+    private var cities = ["Warsaw": "50.0646501,19.9449799",
+                  "Montevideo": "-34.901112,-56.164532",
+                  "Sydney": "-33.865143,151.209900"]
     
     @IBAction func displayNextDayForecastWeather(_ sender: UIButton) {
         self.previousButton.isEnabled = true
@@ -102,10 +105,13 @@ class DetailViewController: UIViewController {
         
     }
     
-    let weatherForecastUrl = URL(string: "https://api.darksky.net/forecast/813dcd329357b2039f8650fbf84c481e/37.8267,-122.4233")!
-    
+
     
     private func getData (completion: @escaping (WeatherForecastBase) -> Void) {
+        let url = "https://api.darksky.net/forecast/813dcd329357b2039f8650fbf84c481e/" + cities["Montevideo"]!
+        
+        let weatherForecastUrl = URL(string: url)!
+        
         let task = URLSession.shared.dataTask(with: weatherForecastUrl) {(data, response, error) in
             guard let fetchedData = data else {
                 return
