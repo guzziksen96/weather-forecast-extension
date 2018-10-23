@@ -8,11 +8,16 @@
 
 import UIKit
 
+struct City {
+    let name : String?
+    let latitudeWithLongitude : String?
+}
 class MasterViewController: UITableViewController {
 
     var detailViewController: DetailViewController? = nil
     var objects = [Any]()
-
+   
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
