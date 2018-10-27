@@ -1,6 +1,29 @@
 
 import Foundation
 
+var dataBase = ["Herat":"34.20,62.12",
+                "Kabul":"34.31,69.12",
+                "Algiers":"36.50,3.00",
+                "Andorra la Vella":"42.30,1.30",
+                "Yerevan":"40.10,44.31",
+                "Brussels":"50.50,4.20",
+                "Beijing":"39.55,116.26",
+                "Harbin":"45.45,126.41",
+                "Kunming":"25.04,102.41",
+                "Shanghai":"31.06,121.22",
+                "Urumqi":"43.43,87.38",
+                "Wuhan":"30.35,108.54",
+                "Taipei":"25.05,121.32",
+                "Nicosia":"35.10,33.22",
+                "Brno":"49.13,16.40",
+                "Prague":"50.06,14.26",
+                "Copenhagen":"55.45,12.25",
+                "Djibouti":"11.33,43.10",
+                "Tibilisi":"41.43,44.49",
+                "Berlin":"52.32,13.25",
+                "Hamburg":"53.33,9.59",
+                "Hong Kong":"22.15,114.10"]
+
 struct Data : Codable {
 	let time : Int?
 	let summary : String?

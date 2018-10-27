@@ -12,12 +12,15 @@ struct City {
     let name : String?
     let latitudeWithLongitude : String?
 }
-class MasterViewController: UITableViewController {
+
+class MasterViewController: UITableViewController, SearchDelegate {
 
     var detailViewController: DetailViewController? = nil
     var objects = [Any]()
    
-    
+    private var cities: Dictionary<String, String> = ["Warsaw": "50.0646501,19.9449799",
+                                                     "Montevideo": "-34.901112,-56.164532",
+                                                     "Sydney": "-33.865143,151.209900"]
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,22 +39,29 @@ class MasterViewController: UITableViewController {
         clearsSelectionOnViewWillAppear = splitViewController!.isCollapsed
         super.viewWillAppear(animated)
     }
-
-    @objc
-    func insertNewObject(_ sender: Any) {
-        objects.insert(NSDate(), at: 0)
-        let indexPath = IndexPath(row: 0, section: 0)
-        tableView.insertRows(at: [indexPath], with: .automatic)
+    
+    func searchResult(cityName: String) {
+        self.cities[cityName] = dataBase[cityName]
+        self.tableView.reloadData()
     }
+    
 
     // MARK: - Segues
 
+    @objc func insertNewObject(_ sender: Any) {
+        
+        let searchVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "searchVC") as! SearchViewController
+        searchVC.delegate = self
+        self.present(searchVC, animated: true, completion: nil)
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = tableView.indexPathForSelectedRow {
-                let object = objects[indexPath.row] as! NSDate
                 let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
-                controller.detailItem = object
+                controller.cityName = Array(self.cities.keys)[indexPath.row]
+                controller.cityCoordinates = self.cities[Array(self.cities.keys)[indexPath.row]]!
+                controller.navigationItem.title = Array(self.cities.keys)[indexPath.row]
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
             }
@@ -63,16 +73,19 @@ class MasterViewController: UITableViewController {
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 60
+    }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return objects.count
+        return cities.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-
-        let object = objects[indexPath.row] as! NSDate
-        cell.textLabel!.text = object.description
+        cell.textLabel!.text = Array(self.cities.keys)[indexPath.row]
+        cell.textLabel?.textAlignment = .center
         return cell
     }
 
@@ -89,7 +102,6 @@ class MasterViewController: UITableViewController {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
         }
     }
-
 
 }
 

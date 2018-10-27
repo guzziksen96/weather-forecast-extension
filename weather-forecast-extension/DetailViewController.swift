@@ -29,6 +29,8 @@ class DetailViewController: UIViewController {
     
     private var myData: [Data]?
     private var index: Int = 0
+    var cityCoordinates = ""
+    var cityName = ""
     
     @IBAction func displayNextDayForecastWeather(_ sender: UIButton) {
         self.previousButton.isEnabled = true
@@ -68,7 +70,9 @@ class DetailViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        getData { [weak self] weatherForecast in
+        self.timezone.text = self.cityName
+        
+        getDataForCity(coordinates: self.cityCoordinates) { [weak self] weatherForecast in
             guard let self = self, let fetchData = weatherForecast.daily?.data?[self.index] else {
                 return
             }
@@ -76,7 +80,6 @@ class DetailViewController: UIViewController {
             self.myData = weatherForecast.daily?.data
             self.displayData(data: fetchData)
             
-            self.timezone.text = weatherForecast.timezone
         }
         configureView()
     }
@@ -100,15 +103,11 @@ class DetailViewController: UIViewController {
         windSpeed.text = String(data.windSpeed!)
         windDirection.text = windDirectionFromBearing(bearingWing: Double(data.windBearing!))
         date.text = convertTimestampToDate(time: data.time!)
-        
     }
     
-    private var cities = ["Warsaw": "50.0646501,19.9449799",
-                          "Montevideo": "-34.901112,-56.164532",
-                          "Sydney": "-33.865143,151.209900"]
     
-    private func getData (completion: @escaping (WeatherForecastBase) -> Void) {
-        let url = "https://api.darksky.net/forecast/813dcd329357b2039f8650fbf84c481e/" + cities["Montevideo"]!
+    private func getDataForCity (coordinates: String, completion: @escaping (WeatherForecastBase) -> Void) {
+        let url = "https://api.darksky.net/forecast/813dcd329357b2039f8650fbf84c481e/" + coordinates
         
         let weatherForecastUrl = URL(string: url)!
         
@@ -116,6 +115,8 @@ class DetailViewController: UIViewController {
             guard let fetchedData = data else {
                 return
             }
+            print(response)
+            print(data)
             
             do {
                 let weatherForecast = try JSONDecoder().decode(WeatherForecastBase.self, from: fetchedData)
@@ -200,9 +201,9 @@ class DetailViewController: UIViewController {
         case "sleet":
             imageName = "sleet"
         case "wind":
-            imageName = "wind"
+            imageName = "snow"
         case "cloudy":
-            imageName = "cloudy"
+            imageName = "partly-cloudy"
         case "partly-cloudy-day":
             imageName = "partly-cloudy"
         case "partly-cloudy-night":
