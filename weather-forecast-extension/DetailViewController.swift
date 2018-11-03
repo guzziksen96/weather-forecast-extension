@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 class DetailViewController: UIViewController {
 
@@ -56,6 +57,16 @@ class DetailViewController: UIViewController {
                 self.previousButton.isEnabled = false
             }
         }
+    }
+    
+    
+    @IBAction func displayMapView(_ sender: UIButton) {
+        let vc = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "mapVC") as! MapViewController
+        let coordinates = self.cityCoordinates.split(separator: ",")
+        vc.latitude = Double(coordinates[0]) ?? 0
+        vc.longitude = Double(coordinates[1]) ?? 0
+        vc.name = self.cityName
+        self.navigationController?.pushViewController(vc, animated: true)
     }
     
     
@@ -120,7 +131,6 @@ class DetailViewController: UIViewController {
             
             do {
                 let weatherForecast = try JSONDecoder().decode(WeatherForecastBase.self, from: fetchedData)
-                
                 DispatchQueue.main.async() {
                     completion(weatherForecast)
                 }

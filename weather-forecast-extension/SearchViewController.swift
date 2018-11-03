@@ -7,12 +7,14 @@
 //
 
 import UIKit
+import MapKit
 
 protocol SearchDelegate {
     func searchResult(cityName: String)
+    func addLocation(location: CLLocation)
 }
 
-class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, CLLocationManagerDelegate {
     
     @IBOutlet weak var searchBar: UISearchBar! {
         didSet {
@@ -31,22 +33,81 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     var delegate: SearchDelegate?
     private var searchResult = ""
-    var results: [String] = []
+    var results: [String] = ["Current location"]
+    let locationManager = CLLocationManager()
+    var currentLocation: [String:String] = [:]
+    var gotFirstLocation = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
     }
     
-    
     @IBAction func backButtonPressed(_ sender: UIButton) {
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func searchButtonPressed(_ sender: UIButton) {
-        self.delegate?.searchResult(cityName: self.searchResult)
-        self.dismiss(animated: true, completion: nil)
+        if searchResult == "Current location" {
+            // Ask for Authorisation from the User.
+            self.locationManager.requestAlwaysAuthorization()
+            
+            // For use in foreground
+            self.locationManager.requestWhenInUseAuthorization()
+            
+            if CLLocationManager.locationServicesEnabled() {
+                locationManager.delegate = self
+                locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+                locationManager.startUpdatingLocation()
+            }
+        } else {
+            self.delegate?.searchResult(cityName: self.searchResult)
+            self.dismiss(animated: true, completion: nil)
+        }
     }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let locValue: CLLocationCoordinate2D = manager.location?.coordinate else { return }
+        print("locations = \(locValue.latitude) \(locValue.longitude)")
+        if gotFirstLocation {
+            gotFirstLocation = false
+            self.delegate?.addLocation(location: CLLocation(latitude: locValue.latitude, longitude: locValue.longitude))
+            self.fetchCityAndCountry(from: manager.location!) { city, country, error in
+                guard let city = city, let country = country, error == nil else {
+                    self.showOkAlert(error: error!, city: "")
+                    return
+                }
+                self.showOkAlert(error: nil, city: city + "," + country)
+            }
+        }
+    }
+    
+    func fetchCityAndCountry(from location: CLLocation, completion: @escaping (_ city: String?, _ country:  String?, _ error: Error?) -> ()) {
+        CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
+            completion(placemarks?.first?.locality,
+                       placemarks?.first?.country,
+                       error)
+        }
+    }
+    
+    func showOkAlert(error: Error?, city: String) {
+        var alert = UIAlertController()
+        if error != nil {
+            alert = UIAlertController(title: "Error", message: "Could not convert coordinates to name." + error!.localizedDescription, preferredStyle: .alert)
+        } else {
+            alert = UIAlertController(title: "Location", message: "You are currently in: " + city , preferredStyle: .alert)
+        }
+        
+        let ok = UIAlertAction(title: "OK", style: .default, handler: {
+            action in
+            alert.dismiss(animated: false, completion: nil)
+            self.dismiss(animated: true, completion: nil)
+        })
+        
+        alert.addAction(ok)
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return results.count
@@ -76,7 +137,8 @@ class SearchViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 return false
             }
         }
-        self.resultsTableVIew.reloadSections(IndexSet(integer: 0), with: .left)
+        self.results.insert("Current location", at: 0)
+        self.resultsTableVIew.reloadSections(IndexSet(integer: 0), with: .none)
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {

@@ -16,6 +16,7 @@
 		41F5E070217675CA002E676C /* WeatherForecastBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F5E06F217675CA002E676C /* WeatherForecastBase.swift */; };
 		41F5E073217675F1002E676C /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F5E071217675F1002E676C /* Data.swift */; };
 		41F5E074217675F1002E676C /* Daily.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41F5E072217675F1002E676C /* Daily.swift */; };
+		B3BDF646218DC6450021E5B2 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BDF645218DC6450021E5B2 /* MapViewController.swift */; };
 		B3E1AAE521845D380011C0BC /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E1AAE421845D380011C0BC /* SearchViewController.swift */; };
 		B3E1AAE7218469000011C0BC /* SearchTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E1AAE6218469000011C0BC /* SearchTableViewCell.swift */; };
 /* End PBXBuildFile section */
@@ -32,6 +33,7 @@
 		41F5E06F217675CA002E676C /* WeatherForecastBase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WeatherForecastBase.swift; sourceTree = "<group>"; };
 		41F5E071217675F1002E676C /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		41F5E072217675F1002E676C /* Daily.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Daily.swift; sourceTree = "<group>"; };
+		B3BDF645218DC6450021E5B2 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		B3E1AAE421845D380011C0BC /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		B3E1AAE6218469000011C0BC /* SearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -78,6 +80,7 @@
 				41F5E0662175F2F2002E676C /* LaunchScreen.storyboard */,
 				41F5E0612175F2F0002E676C /* Main.storyboard */,
 				41F5E0642175F2F2002E676C /* Assets.xcassets */,
+				B3BDF645218DC6450021E5B2 /* MapViewController.swift */,
 			);
 			path = "weather-forecast-extension";
 			sourceTree = "<group>";
@@ -157,6 +160,7 @@
 				41F5E073217675F1002E676C /* Data.swift in Sources */,
 				B3E1AAE521845D380011C0BC /* SearchViewController.swift in Sources */,
 				41F5E05E2175F2F0002E676C /* MasterViewController.swift in Sources */,
+				B3BDF646218DC6450021E5B2 /* MapViewController.swift in Sources */,
 				41F5E070217675CA002E676C /* WeatherForecastBase.swift in Sources */,
 				41F5E05C2175F2F0002E676C /* AppDelegate.swift in Sources */,
 				41F5E074217675F1002E676C /* Daily.swift in Sources */,

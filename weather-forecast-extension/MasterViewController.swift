@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import MapKit
 
 struct City {
     let name : String?
@@ -15,9 +16,12 @@ struct City {
 
 class MasterViewController: UITableViewController, SearchDelegate {
 
+    
     var detailViewController: DetailViewController? = nil
     var objects = [Any]()
-   
+    var currentLocation = CLLocation()
+    var currentLocationName: String = ""
+    
     private var cities: Dictionary<String, String> = ["Warsaw": "50.0646501,19.9449799",
                                                      "Montevideo": "-34.901112,-56.164532",
                                                      "Sydney": "-33.865143,151.209900"]
@@ -40,11 +44,32 @@ class MasterViewController: UITableViewController, SearchDelegate {
         super.viewWillAppear(animated)
     }
     
+    // MARK: - Search delegate
+    
     func searchResult(cityName: String) {
         self.cities[cityName] = dataBase[cityName]
         self.tableView.reloadData()
     }
     
+    func addLocation(location: CLLocation) {
+        self.fetchCityAndCountry(from: location) { city, country, error in
+            guard let city = city, let country = country, error == nil else {
+                return
+            }
+            self.cities["Current Location: " + city + "," + country] = "\(location.coordinate.latitude),\(location.coordinate.longitude)"
+            self.currentLocation = location
+            self.currentLocationName = city + "," + country
+            self.tableView.reloadData()
+        }
+    }
+    
+    func fetchCityAndCountry(from location: CLLocation, completion: @escaping (_ city: String?, _ country:  String?, _ error: Error?) -> ()) {
+        CLGeocoder().reverseGeocodeLocation(location) { placemarks, error in
+            completion(placemarks?.first?.locality,
+                       placemarks?.first?.country,
+                       error)
+        }
+    }
 
     // MARK: - Segues
 
@@ -60,8 +85,14 @@ class MasterViewController: UITableViewController, SearchDelegate {
             if let indexPath = tableView.indexPathForSelectedRow {
                 let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
                 controller.cityName = Array(self.cities.keys)[indexPath.row]
-                controller.cityCoordinates = self.cities[Array(self.cities.keys)[indexPath.row]]!
-                controller.navigationItem.title = Array(self.cities.keys)[indexPath.row]
+                if controller.cityName.contains("Current ") {
+                    controller.cityName = self.currentLocationName
+                    controller.cityCoordinates = "\(currentLocation.coordinate.latitude),\(currentLocation.coordinate.longitude)"
+                    controller.navigationItem.title = "Location"
+                } else {
+                    controller.cityCoordinates = self.cities[Array(self.cities.keys)[indexPath.row]]!
+                    controller.navigationItem.title = Array(self.cities.keys)[indexPath.row]
+                }
                 controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 controller.navigationItem.leftItemsSupplementBackButton = true
             }
